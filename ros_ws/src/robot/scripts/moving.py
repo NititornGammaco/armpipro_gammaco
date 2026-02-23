@@ -1,35 +1,35 @@
 #!/usr/bin/env python3
 
-import rospy                                   # ใช้งาน ROS กับ Python
-from chassis_control.msg import *              # นำเข้า Message ที่ใช้ควบคุมแชสซีหุ่นยนต์
+import rospy                                   # Import ROS Python library
+from chassis_control.msg import *              # Import message type for controlling the robot chassis
 
-start = True                                   # กำหนด flag สำหรับควบคุม loop การทำงาน
+start = True                                   # Flag variable used to control the main loop
 
 def stop():
     global start
-    start = False                              # เมื่อถูกเรียก จะหยุดการวน loop
-    set_velocity.publish(0,0,0)                # ส่งคำสั่งหยุดหุ่นยนต์ (ความเร็ว 0)
+    start = False                              # Stop the loop when shutdown is triggered
+    set_velocity.publish(0,0,0)                # Send stop command (zero velocity)
 
-rospy.init_node('robot_moving')                # สร้าง node ชื่อ 'robot_moving'
-rospy.on_shutdown(stop)                        # ตั้ง callback ให้เรียก stop() เมื่อ ROS shutdown
+rospy.init_node('robot_moving')                # Create ROS node named 'robot_moving'
+rospy.on_shutdown(stop)                        # Register stop() to run when ROS shuts down
 
 set_velocity = rospy.Publisher(
-    '/chassis_control/set_velocity',           # ประกาศ publisher ส่งข้อมูลไปยัง topic นี้
-    SetVelocity,                               # ประเภท message ที่ใช้
-    queue_size=1                               # กำหนดคิวแค่ 1 (เน้นสถานะล่าสุด)
+    '/chassis_control/set_velocity',           # Topic for sending velocity commands
+    SetVelocity,                               # Message type used for velocity control
+    queue_size=1                               # Keep only the latest command in the queue
 )
 
-rospy.sleep(1)                                 # รอ 1 วินาที ให้ publisher พร้อมก่อนเริ่มทำงาน
+rospy.sleep(1)                                 # Wait 1 second to ensure publisher is ready
 
 while start:
-    set_velocity.publish(30,90,0)              # ส่งคำสั่งให้หุ่นยนต์เดินหน้า ด้วยความเร็ว 30
-    rospy.sleep(3)                             # รอ 3 วินาที
+    set_velocity.publish(30,90,0)              # Move forward with speed 30 (direction 90°)
+    rospy.sleep(3)                             # Move for 3 seconds
 
-    set_velocity.publish(30,0,0)               # ส่งคำสั่งให้หุ่นยนต์ไปทางขวา ด้วยความเร็ว 30
-    rospy.sleep(3)                             # รอ 3 วินาที
+    set_velocity.publish(30,0,0)               # Move right with speed 30 (direction 0°)
+    rospy.sleep(3)                             # Move for 3 seconds
 
-    set_velocity.publish(30,180,0)             # ส่งคำสั่งให้หุ่นยนต์ไปทางซ้าย ด้วยความเร็ว 30
-    rospy.sleep(3)                             # รอ 3 วินาที
+    set_velocity.publish(30,180,0)             # Move left with speed 30 (direction 180°)
+    rospy.sleep(3)                             # Move for 3 seconds
 
-    set_velocity.publish(30,270,0)             # ส่งคำสั่งให้หุ่นยนต์ถอยหลัง ด้วยความเร็ว 30
-    rospy.sleep(3)                             # รอ 3 วินาที
+    set_velocity.publish(30,270,0)             # Move backward with speed 30 (direction 270°)
+    rospy.sleep(3)                             # Move for 3 seconds
